@@ -2,18 +2,18 @@ const SHA256 = require("crypto-js/sha256");
 const express = require('express');
 const bodyParser = require('body-parser');
 const multer = require('multer');
+const fs = require('fs');
 
 let upload = multer();
 
 const app = express();
 var datetime = new Date();
-
+var i = 0;
 app.use(bodyParser.urlencoded({
         extended: false
 }));
 app.use(bodyParser.json());
 
-const nodeAddr = 'JavaSampleApproach';
 
 class Block {
     constructor(index, timestamp, name, dui, previousHash = '') {
@@ -80,15 +80,9 @@ console.log('Blockchain valid? ' + saveChain.isChainValid());
 console.log('Changing a block...');
 
 app.post('/transaction', upload.fields([]), function (req, res) {
-   /* const blockIndex = bitcoin.makeNewTransaction(
-        req.body.amount,
-        req.body.sender,
-        req.body.recipient
-    );*/
-
-    req.setEncoding('utf8');
+    i++;
     saveChain.addBlock(new Block(
-        4, 
+        i, 
         datetime, 
         req.body.name, 
         req.body.DUI
@@ -96,13 +90,15 @@ app.post('/transaction', upload.fields([]), function (req, res) {
     );
 
     let formData = req.body;
-    console.log('form data', formData);
+   // console.log('form data', formData);
 
     
     const blockIndex = JSON.stringify(saveChain, null, 5);
+const object = JSON.parse(blockIndex);
+ console.log(JSON.stringify(saveChain, null, 4));
     res.json(
         {
-            message: `Transaction is added to block with index: ${blockIndex}`
+            message: `Transaction is added to block with index: ${object}`
         }
     );
 });
@@ -113,7 +109,7 @@ app.post('/transaction', upload.fields([]), function (req, res) {
 
 //console.log("Blockchain valid? " + saveChain.isChainValid());
 
- console.log(JSON.stringify(saveChain, null, 4));
+
 
 app.listen(3000, function () {
     console.log('> listening on port 3000...');
